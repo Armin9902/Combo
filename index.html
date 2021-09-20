@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+    margin:0;
+}
+*{
+    box-sizing: border-box ;
+    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    overflow: hidden;
+}
+h1{
+    color:#000;
+    text-shadow:2px 2px 15px rgb(216, 166, 3);
+    font-size:40px;
+    text-align: center;
+    margin:0;
+    padding-top:20px;
+    transform:translateX(50%) scale(0.01);
+    animation-name: h-animation;
+    animation-duration:3s;
+    animation-iteration-count:1;
+    animation-fill-mode:forwards;
+}
+.game{
+    background:linear-gradient(#ddd ,purple);
+    width:100%;
+    height:100vh;
+    text-align:center;
+
+}
+@keyframes h-animation{
+    100%{
+        transform:translateX(0%) scale(2.5);
+    }   
+}
+.btn{
+    font-size:30px;
+    border: none;
+    border-radius:20px;
+    display: block;
+    padding:1rem 4rem;
+    margin:5rem auto;
+    font-weight:900;
+    transform: scale(0.01) rotate(720deg);
+    background:radial-gradient(purple,blue);
+    animation-name:btn-animation;
+    animation-duration:3s;
+    animation-iteration-count:1;
+    animation-fill-mode:forwards;
+    cursor: pointer;
+    color:#fff;
+    box-shadow:5px 5px 10px #000;
+}
+
+.guidance{
+    text-align: justify;
+    line-height: 2;
+    font-size:18px;
+    width:80%;
+    margin:0 auto;
+    font-weight: 800;
+    transform: translateY(200%) skew(50deg,50deg);
+    animation-name: guidance-animation;
+    animation-duration:3s;
+    animation-iteration-count:1;
+    animation-fill-mode:forwards;
+    user-select: none;
+    text-shadow:2px 2px 5px purple;
+}
+@keyframes btn-animation{
+    100%{
+        transform: scale(1.2);
+    }    
+}
+@keyframes  guidance-animation {
+    100%{
+        transform: translateY(0);
+    }
+}
+.inp,.up,.down{
+    width:40px;
+    height:40px;
+    font-size:30px;
+    font-weight:900;
+    margin:0.5rem 0.2rem;
+    border:none;
+    text-align: center;
+    transform:scale(0.1) translateY(-100%);
+    border-radius:5px;
+    box-shadow:4px 4px 10px #000;
+    animation-name: inp-animation;
+    animation-duration:2s;
+    animation-iteration-count:1;
+    animation-fill-mode:forwards;
+}
+.up,.down{
+    cursor: pointer;
+    font-weight:900;
+}
+
+@keyframes inp-animation {
+    100%{
+        transform: scale(1);
+    }
+}
+.text{
+    font-size:30px;
+    background:linear-gradient(#ddd ,rgb(50, 165, 130));
+    margin: 0;
+    padding:0.5rem;
+    text-align: left;
+}
+    </style>
+</head>
+<body>
+    <div class="game">
+        <h1>Combo</h1>
+         <button class="btn">start</button>
+         <div class="numbers"></div>
+         <div class="up-btns"></div>
+         <div class="down-btns"></div>
+         <div class="guidance">
+            In this game you have to guess a multi-digit number. If you can find the desired number in a smaller number of guesses, you will get more points. Green means that your choice is right. Red means that your choice is more than the desired number and blue means that your choice is less than the desired number. Good luck
+         </div>
+    </div>
+    <script>
+        const buttom = document.querySelector(".btn");
+const game = document.querySelector(".numbers");
+const h1 = document.querySelector("h1");
+const guidance = document.querySelector(".guidance");
+const UpBtn = document.querySelector(".up-btns");
+const DownBtn = document.querySelector(".down-btns");
+
+
+let playgame=false;
+let i;
+let s=0;
+let n=0;
+let val=["0","1","2","3","4","5","6","7","8","9"];
+let x=0;
+let time=0;
+let text = document.createElement("p");
+text.classList="text";
+setInterval(()=>{time++},1000);
+buttom.addEventListener("click", function(){
+  if(!playgame){    
+      playgame = true;
+      s=0;
+      n=0; 
+      time=0;
+      game.innerHTML="";
+      DownBtn.innerHTML="";
+      UpBtn.innerHTML="";
+      farmingGame();
+      buttom.textContent="check";
+      h1.style.display="none";
+      guidance.style.display="none";
+      buttom.before(text);
+      text.innerHTML=`Guess: <br> guesses: ${0} <br> Time : ${time}s`;
+  }
+  else{  
+        const numbers = document.querySelectorAll(".inp");
+        s=s+1;
+        text.innerHTML=`Guess: <br> guesses : ${s} <br> Time : ${time}`;   
+        n=0;    
+        for(i=0;i<numbers.length;i++){
+            if(numbers[i].value==numbers[i].correct){
+                numbers[i].style.backgroundColor="green";
+                n++;
+            }
+            else{
+             let color = (numbers[i].value<numbers[i].correct) ? "red": "blue";
+             numbers[i].style.backgroundColor=color;
+            }
+            if(n==numbers.length){
+                endGame();
+            }
+
+            
+        }
+      
+  }
+})
+function endGame(){
+        text.innerHTML=`Guess: <br> guesses: ${s} <br> You solved the Combo in ${s} Guesses and in  Time : ${time}s`;  
+         playgame=false;
+         buttom.innerHTML="Restart Game";
+         s=0;
+         n=0;
+}
+function farmingGame(){
+    for(i=0;i<7;i++)
+    {
+        let inp = document.createElement("input");
+        inp.classList="inp";
+        inp.type="number";
+        inp.min="0";
+        inp.max="9";
+        inp.correct=Math.floor(Math.random()*10);
+        inp.value="0";
+        game.appendChild(inp);
+        let up = document.createElement("button");
+        up.classList="up";
+        up.innerHTML=`&uarr;`;
+        UpBtn.append(up);
+        let down = document.createElement("button");
+        down.classList="down";
+        down.innerHTML=`&darr;`;
+        DownBtn.append(down);
+        up.addEventListener("click",()=>{
+            if(x>8){x==8}
+            inp.value=val[x];
+            x++;
+        })
+        down.addEventListener("click",()=>{
+            if(x<0){x==0}
+            inp.value=val[x];
+            x--;
+        })   
+       }
+}
+    </script>
+</body>
+</html>
